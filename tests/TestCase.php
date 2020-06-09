@@ -8,8 +8,15 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
-    public function fakeUsers()
+    function fakeUsers()
     {
     	return factory(\App\User::class, 100)->create();
+    }
+
+    function createUsersAndSelect()
+    {
+    	$users = $this->fakeUsers();
+
+    	return $users->random();
     }
 }

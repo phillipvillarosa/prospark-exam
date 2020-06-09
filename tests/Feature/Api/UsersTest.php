@@ -29,11 +29,44 @@ class UsersTest extends TestCase
             ]);
     }
 
+    public function testStoreNewUser()
+    {
+        $create_user = $this->postJson('api/users', [
+            'name' => 'Juan Dela Cruz',
+            'email' => 'juandc@gmail.com',
+            'password' => 'bawallumabas'
+        ]);
+
+        $create_user->assertStatus(200);
+        $this->assertDatabaseHas('users', [
+            'name' => 'Juan Dela Cruz',
+            'email' => 'juandc@gmail.com'
+        ]);
+    }
+
+    public function testErrOnStoringExistingUserWithSameEmail()
+    {
+        $create_user = $this->postJson('api/users', [
+            'name' => 'Juan Dela Cruz',
+            'email' => 'juandc@gmail.com',
+            'password' => 'bawallumabas'
+        ]);
+
+        $create_user->assertStatus(200);
+
+        //store same user again with same email
+        $create_same_user = $this->postJson('api/users', [
+            'name' => 'Juan Dela Cruz',
+            'email' => 'juandc@gmail.com',
+            'password' => 'bawallumabas'
+        ]);
+
+        $create_same_user->assertJsonValidationErrors(['email']);
+    }
+
     public function testShowAUser()
     {
-        $users = $this->fakeUsers();
-
-        $selected_user = $users->random();
+        $selected_user = $this->createUsersAndSelect();
 
         $response = $this->getJson('api/users/' . $selected_user->id);
 
@@ -45,15 +78,14 @@ class UsersTest extends TestCase
 
     public function testUpdateAUser()
     {
-        $users = $this->fakeUsers();
-
-        $selected_user = $users->random();
+        $selected_user = $this->createUsersAndSelect();
 
         $updated_user = $this->patchJson('api/users/' . $selected_user->id, [
             'name' => 'Juan Dela Cruz',
-            'email' => 'juandc@gmail.com'
+            'email' => 'juandc@gmail.com',
         ]);
 
+        $updated_user->assertStatus(200);
         $this->assertDatabaseHas('users', [
             'name' => 'Juan Dela Cruz',
             'email' => 'juandc@gmail.com'
@@ -62,12 +94,37 @@ class UsersTest extends TestCase
 
     public function testDeleteAUser()
     {
-        $users = $this->fakeUsers();
-
-        $selected_user = $users->random();
+        $selected_user = $this->createUsersAndSelect();
 
         $delete_user = $this->deleteJson('api/users/' . $selected_user->id);
 
+        $delete_user->assertStatus(200);
         $this->assertDeleted($selected_user);
+    }
+
+    public function testSearchingExistingUser()
+    {
+        $user = $this->createUsersAndSelect();
+
+        $search_user = $this->postJson('api/users/search', [
+            'name' => $user->name,
+            'email' => $user->email
+        ]);
+
+        $search_user->assertStatus(200)
+            ->assertJsonFragment(['name' => $user->name])
+            ->assertJsonFragment(['email' => $user->email]);
+    }
+
+    public function testSearchingNonExistingUserReturnsEmptyData()
+    {
+        $this->fakeUsers();
+
+        $search_user = $this->postJson('api/users/search', [
+            'name' => 'Juan Dela Cruz',
+            'email' => 'juandc@gmail.com'
+        ]);
+
+        $search_user->assertJsonFragment(['data' => []]);
     }
 }
