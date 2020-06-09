@@ -3,7 +3,10 @@
         <div class="col">
             <div class="card">
                 <div class="card-body">
-                    <jq-datatable :options="options" :elements="elements"></jq-datatable>
+                    <jq-datatable :data-type="data_type"
+                        :options="options" 
+                        :elements="elements"
+                        @edit-data="editData"></jq-datatable>
                 </div>
             </div>
         </div>
@@ -14,6 +17,7 @@
     export default {
         data() {
             return {
+                data_type: 'users',
                 options: {
                     url: 'api/users',
                     data_src: 'users',
@@ -29,5 +33,11 @@
                 }
             }
         },
+        methods: {
+            editData(data) {
+                var edit_modal = this.$refs.edit_modal;
+                $(edit_modal).modal('show');
+            }
+        }
     }
 </script>

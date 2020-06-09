@@ -1,5 +1,5 @@
 <template>
-	<table ref="datatable" class="table table-striped table-bordered" style="width:100%">
+	<table ref="datatable" id="datatable" class="table table-striped" style="width:100%">
         <thead>
             <tr>
             	<th v-for="theader in elements.theaders">{{theader}}</th>
@@ -10,37 +10,46 @@
 
 <script>
     export default {
-    	props: ['options', 'elements'],
+    	props: ['options', 'elements', 'dataType'],
         data() {
             return {
                 dt: {},
-                user_data: {}
+                user_data: {},
             }
         },
         mounted() {
-            this.dt = $(this.$refs.datatable).DataTable({
+            var table = this.dt = $(this.$refs.datatable).DataTable({
             	serverSide: true,
                 ajax: {
                     url: this.options.url,
                     dataSrc: this.options.data_src,
                 },
                 columns: this.options.columns,
-                dom: 'Bfrtp',
-			    select: true,
-			    buttons: [
-		            {
-		                text: 'Select all',
-		                action: function () {
-		                    table.rows().select();
-		                }
-		            },
-		            {
-		                text: 'Select none',
-		                action: function () {
-		                    table.rows().deselect();
-		                }
-		            }
-		        ]
+                processing: true,
+                dom: '<Bf<t>p>',
+		        select: {
+		            toggleable: true
+		        },
+		        // buttons: [
+		        //     {
+		        //         text: 'Edit',
+		        //         action: () => {
+		        //         	var data = table.rows( { selected: true } ).data();
+		        //         	if (data) {
+		        //         		this.$emit('edit-data', data[0]);
+		        //         	}
+		        //         }
+		        //     },
+		        //     {
+		        //         text: 'Delete',
+		        //         action: () => {
+		        //         	var data = table.rows( { selected: true } ).data();
+		        //         	if (data) {
+		        //         		this.$emit('delete-data', data[0]);
+		        //         	}
+		        //         }
+		        //     },
+		        // ]
             });
 
 

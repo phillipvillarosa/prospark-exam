@@ -1919,7 +1919,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['options', 'elements'],
+  props: ['options', 'elements', 'dataType'],
   data: function data() {
     return {
       dt: {},
@@ -1927,26 +1927,38 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   mounted: function mounted() {
-    this.dt = $(this.$refs.datatable).DataTable({
+    var table = this.dt = $(this.$refs.datatable).DataTable({
       serverSide: true,
       ajax: {
         url: this.options.url,
         dataSrc: this.options.data_src
       },
       columns: this.options.columns,
-      dom: 'Bfrtp',
-      select: true,
-      buttons: [{
-        text: 'Select all',
-        action: function action() {
-          table.rows().select();
-        }
-      }, {
-        text: 'Select none',
-        action: function action() {
-          table.rows().deselect();
-        }
-      }]
+      processing: true,
+      dom: '<Bf<t>p>',
+      select: {
+        toggleable: true
+      } // buttons: [
+      //     {
+      //         text: 'Edit',
+      //         action: () => {
+      //         	var data = table.rows( { selected: true } ).data();
+      //         	if (data) {
+      //         		this.$emit('edit-data', data[0]);
+      //         	}
+      //         }
+      //     },
+      //     {
+      //         text: 'Delete',
+      //         action: () => {
+      //         	var data = table.rows( { selected: true } ).data();
+      //         	if (data) {
+      //         		this.$emit('delete-data', data[0]);
+      //         	}
+      //         }
+      //     },
+      // ]
+
     });
   }
 });
@@ -1974,9 +1986,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      data_type: 'users',
       options: {
         url: 'api/users',
         data_src: 'users',
@@ -1994,6 +2010,12 @@ __webpack_require__.r(__webpack_exports__);
         theaders: ['Name', 'Email', 'Email Verified', 'Created At']
       }
     };
+  },
+  methods: {
+    editData: function editData(data) {
+      var edit_modal = this.$refs.edit_modal;
+      $(edit_modal).modal('show');
+    }
   }
 });
 
@@ -59028,8 +59050,9 @@ var render = function() {
     "table",
     {
       ref: "datatable",
-      staticClass: "table table-striped table-bordered",
-      staticStyle: { width: "100%" }
+      staticClass: "table table-striped",
+      staticStyle: { width: "100%" },
+      attrs: { id: "datatable" }
     },
     [
       _c("thead", [
@@ -59074,7 +59097,12 @@ var render = function() {
           { staticClass: "card-body" },
           [
             _c("jq-datatable", {
-              attrs: { options: _vm.options, elements: _vm.elements }
+              attrs: {
+                "data-type": _vm.data_type,
+                options: _vm.options,
+                elements: _vm.elements
+              },
+              on: { "edit-data": _vm.editData }
             })
           ],
           1
@@ -71312,13 +71340,13 @@ try {
 
   __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.js");
 
-  __webpack_require__(/*! datatables.net-bs4 */ "./node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js")();
+  __webpack_require__(/*! datatables.net-searchpanes-bs4 */ "./node_modules/datatables.net-searchpanes-bs4/js/searchPanes.bootstrap4.js");
 
-  __webpack_require__(/*! datatables.net-searchpanes-bs4 */ "./node_modules/datatables.net-searchpanes-bs4/js/searchPanes.bootstrap4.js")();
+  __webpack_require__(/*! datatables.net-select-bs4 */ "./node_modules/datatables.net-select-bs4/js/select.bootstrap4.js");
 
-  __webpack_require__(/*! datatables.net-select-bs4 */ "./node_modules/datatables.net-select-bs4/js/select.bootstrap4.js")();
+  __webpack_require__(/*! datatables.net-buttons-bs4 */ "./node_modules/datatables.net-buttons-bs4/js/buttons.bootstrap4.js");
 
-  __webpack_require__(/*! datatables.net-buttons-bs4 */ "./node_modules/datatables.net-buttons-bs4/js/buttons.bootstrap4.js")();
+  __webpack_require__(/*! datatables.net-bs4 */ "./node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js");
 } catch (e) {}
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
