@@ -1935,9 +1935,16 @@ __webpack_require__.r(__webpack_exports__);
       },
       columns: this.options.columns,
       processing: true,
-      dom: '<Bf<t>p>',
+      dom: '<f<t>p>',
       select: {
         toggleable: true
+      },
+      "fnDrawCallback": function fnDrawCallback(oSettings) {
+        if ($('#datatable tr').length < 11) {
+          $('.dataTables_paginate').hide();
+        } else {
+          $('.dataTables_paginate').show();
+        }
       } // buttons: [
       //     {
       //         text: 'Edit',
