@@ -15,7 +15,14 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = User::paginate(20);
+        $offset = request()->start;
+        $limit = request()->length;
+        $dir = request()->order[0]['dir'];
+        $column_idx = request()->order[0]['column'];
+        $order_by = request()->columns[$column_idx]['data'];
+        $search_val = request()->search['value'];
+
+        $users = User::getUsers($offset, $limit, $dir, $order_by, $search_val);
         
         return response()->json(compact('users'));
     }
