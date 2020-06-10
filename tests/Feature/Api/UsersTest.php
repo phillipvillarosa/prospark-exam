@@ -19,13 +19,38 @@ class UsersTest extends TestCase
     {
         $users = $this->fakeUsers();
 
-        $response = $this->getJson('/api/users');
+        $params = [
+            'start' => 0,
+            'length' => 20,
+            'columns' => [
+                [
+                    'data' => 'name',
+                    'name' => '',
+                    'searchable' => '',
+                    'orderable' => '',
+                    'search' => [
+                        'value' => '',
+                        'regex' => ''
+                    ],
 
-        $response->assertStatus(200)
-            ->assertJson([
-                'users' => [
-                    'total' => $users->count(),
                 ]
+            ],
+            'order' => [
+                [ 
+                    'column' => 0 ,
+                    'dir' => 'asc'
+                ]
+            ],
+            'search' => [
+                'value' => ''
+            ]
+        ];
+
+        $response = $this->json('GET', '/api/users', $params);
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'users' => []
             ]);
     }
 
@@ -37,7 +62,7 @@ class UsersTest extends TestCase
             'password' => 'bawallumabas'
         ]);
 
-        $create_user->assertStatus(200);
+        $create_user->assertOk();
         $this->assertDatabaseHas('users', [
             'name' => 'Juan Dela Cruz',
             'email' => 'juandc@gmail.com'
@@ -52,7 +77,7 @@ class UsersTest extends TestCase
             'password' => 'bawallumabas'
         ]);
 
-        $create_user->assertStatus(200);
+        $create_user->assertOk();
 
         //store same user again with same email
         $create_same_user = $this->postJson('api/users', [
@@ -70,7 +95,7 @@ class UsersTest extends TestCase
 
         $response = $this->getJson('api/users/' . $selected_user->id);
 
-        $response->assertStatus(200)
+        $response->assertOk()
             ->assertJson([
                 'user' => $selected_user->toArray()
             ]);
@@ -85,7 +110,7 @@ class UsersTest extends TestCase
             'email' => 'juandc@gmail.com',
         ]);
 
-        $updated_user->assertStatus(200);
+        $updated_user->assertOk();
         $this->assertDatabaseHas('users', [
             'name' => 'Juan Dela Cruz',
             'email' => 'juandc@gmail.com'
@@ -98,7 +123,7 @@ class UsersTest extends TestCase
 
         $delete_user = $this->deleteJson('api/users/' . $selected_user->id);
 
-        $delete_user->assertStatus(200);
+        $delete_user->assertOk();
         $this->assertDeleted($selected_user);
     }
 
@@ -111,7 +136,7 @@ class UsersTest extends TestCase
             'email' => $user->email
         ]);
 
-        $search_user->assertStatus(200)
+        $search_user->assertOk()
             ->assertJsonFragment(['name' => $user->name])
             ->assertJsonFragment(['email' => $user->email]);
     }

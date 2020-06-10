@@ -19,7 +19,7 @@
             return {
                 data_type: 'users',
                 options: {
-                    url: 'api/users',
+                    url: 'https://prospark-exam.test/api/users',
                     data_src: 'users',
                     columns: [
                         {data: 'name'},
